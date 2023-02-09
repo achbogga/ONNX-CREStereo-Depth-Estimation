@@ -28,8 +28,17 @@ class CREStereo():
 		self.max_dist = max_dist
 
 		# Initialize model session
-		self.session = onnxruntime.InferenceSession(model_path, providers=['CUDAExecutionProvider',
-																		   'CPUExecutionProvider'])
+		self.session = onnxruntime.InferenceSession(model_path, providers=[
+						('TensorrtExecutionProvider', {
+							'device_id': 0,
+							'trt_max_workspace_size': 2147483648,
+							'trt_fp16_enable': True,
+							'trt_engine_cache_enable': True,
+							'trt_engine_cache_path': '/home/aboggaram/models/',
+							# 'trt_dump_subgraphs': True,
+						}),
+						'CUDAExecutionProvider',
+						'CPUExecutionProvider'])
 		# Get model info
 		self.get_input_details()
 		self.get_output_details()
