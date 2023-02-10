@@ -66,6 +66,7 @@ if __name__ == '__main__':
 	for i in range(len(stereo_pair_paths)):
 
 		left_img_path, right_img_path = stereo_pair_paths[i]
+		left_image_name = left_img_path.split('/')[-1]
 		left_img = cv2.imread(left_img_path)
 		right_img = cv2.imread(right_img_path)
 
@@ -75,8 +76,8 @@ if __name__ == '__main__':
 		color_disparity = depth_estimator.draw_disparity()
 
 		combined_image = np.hstack((left_img, color_disparity))
-		output_image_path = output_folder+'/stereo_depth_output_'+str(i)+'.jpg'
-		# cv2.imwrite(output_image_path, combined_image)
+		output_image_path = output_folder+'/'+left_image_name
+		cv2.imwrite(output_image_path, combined_image)
 		cv2.namedWindow("Estimated disparity", cv2.WINDOW_NORMAL)	
 		cv2.imshow("Estimated disparity", combined_image)
 
@@ -87,7 +88,7 @@ if __name__ == '__main__':
 		elif pressed_key == 32:
 			continue
 		else:
-			cv2.waitKey(delay=1000)
+			cv2.waitKey(delay=100)
 	cv2.destroyAllWindows()
 	del depth_estimator
 
