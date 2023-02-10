@@ -2,26 +2,7 @@ import cv2
 import numpy as np
 import os
 
-from crestereo.crestereo import CREStereo
-
-from contextlib import contextmanager
-import time
-import logging
-
-
-@contextmanager
-def _log_time_usage(prefix=""):
-	'''log the time usage in a code block
-	prefix: the prefix text to show
-	'''
-	start = time.time()
-	try:
-		yield
-	finally:
-		end = time.time()
-		elapsed_seconds = float("%.2f" % (end - start))
-		logging.debug('%s: elapsed seconds: %s', prefix, elapsed_seconds)
-		print('elapsed seconds', prefix, elapsed_seconds)
+from crestereo.crestereo import CREStereo, _log_time_usage
 
 
 def read_stereo_pairs_from_folder(folder_path, extension='.png'):
