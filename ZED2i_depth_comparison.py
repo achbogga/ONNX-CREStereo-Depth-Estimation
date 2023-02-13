@@ -40,6 +40,8 @@ def main():
 	print ('stereo_baseline: ', stereo_baseline)
 	zed2i_camera_config = CameraConfig(stereo_baseline, focal_left_x)
 
+	# output folder path
+	output_folder_path = '/home/aboggaram/data/Octiva/zed2i_cre_depth_map_comparison'
 
 	# Initialize model
 	model_path = f'models/crestereo_{version}_iter{iters}_{shape[0]}x{shape[1]}.onnx'
@@ -92,6 +94,8 @@ def main():
 			combined_image = np.hstack((color_depth_map_zed, color_depth_crestereo))
 			combined_image = cv2.resize(combined_image, (1920, 1080))
 			cv2.imshow('zed_cre_depth_comparison', combined_image)
+			output_image_path = output_folder_path+'/frame_'+str(i)+'.jpg'
+			cv2.imwrite(output_image_path, combined_image)
 			depth_map_from_crestereo[np.isnan(depth_map_from_crestereo)] = 0
 			depth_map_from_crestereo[np.isinf(depth_map_from_crestereo)] = 0
 			depth_map_from_zed[np.isinf(depth_map_from_zed)] = 0
