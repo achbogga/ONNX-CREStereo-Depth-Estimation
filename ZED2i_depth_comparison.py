@@ -17,7 +17,7 @@ def main():
 	init_params.camera_resolution = sl.RESOLUTION.HD720
 
 	# Model Selection options (not all options supported together)
-	iters = 5            # Lower iterations are faster, but will lower detail. 
+	iters = 2            # Lower iterations are faster, but will lower detail. 
 						# Options: 2, 5, 10, 20 
 
 	shape = (720, 1280)   # Input resolution. 
@@ -49,7 +49,7 @@ def main():
 
 	# Create and set RuntimeParameters after opening the camera
 	runtime_parameters = sl.RuntimeParameters()
-	runtime_parameters.sensing_mode = sl.SENSING_MODE.STANDARD  # Use STANDARD sensing mode
+	runtime_parameters.sensing_mode = sl.SENSING_MODE.FILL  # Use STANDARD or FILL sensing modes
 	# Setting the depth confidence parameters
 	runtime_parameters.confidence_threshold = 100
 	runtime_parameters.textureness_confidence_threshold = 100
@@ -80,15 +80,15 @@ def main():
 				disparity_map = depth_estimator(left_img=left_image_array, right_img=right_image_array)
 			depth_map_from_crestereo = deepcopy(depth_estimator.depth_map)
 
-			color_depth_crestereo = depth_estimator.draw_depth()
+			color_depth_crestereo = deepcopy(depth_estimator.draw_depth())
 
 			# Retrieve depth map. Depth is aligned on the left image
 			zed.retrieve_measure(depth, sl.MEASURE.DEPTH)
 
 			depth_map_from_zed = deepcopy(depth.get_data())
 
-			depth_estimator.depth_map = depth.get_data()
-			color_depth_map_zed = depth_estimator.draw_depth()
+			depth_estimator.depth_map = depth_map_from_zed
+			color_depth_map_zed = deepcopy(depth_estimator.draw_depth())
 			combined_image = np.hstack((color_depth_map_zed, color_depth_crestereo))
 			combined_image = cv2.resize(combined_image, (1920, 1080))
 			cv2.imshow('zed_cre_depth_comparison', combined_image)
