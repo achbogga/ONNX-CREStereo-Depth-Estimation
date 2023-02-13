@@ -12,12 +12,12 @@ def main():
 
 	# Create a InitParameters object and set configuration parameters
 	init_params = sl.InitParameters()
-	init_params.depth_mode = sl.DEPTH_MODE.ULTRA  # Use PERFORMANCE depth mode
+	init_params.depth_mode = sl.DEPTH_MODE.NEURAL  # Use one of PERFORMANCE, NEURAL, ULTRA, QUALITY depth modes
 	init_params.coordinate_units = sl.UNIT.METER  # Use meter units (for depth measurements)
 	init_params.camera_resolution = sl.RESOLUTION.HD720
 
 	# Model Selection options (not all options supported together)
-	iters = 2            # Lower iterations are faster, but will lower detail. 
+	iters = 5            # Lower iterations are faster, but will lower detail. 
 						# Options: 2, 5, 10, 20 
 
 	shape = (720, 1280)   # Input resolution. 
@@ -35,7 +35,7 @@ def main():
 	# Focal length of the left eye in pixels
 	focal_left_x = calibration_params.left_cam.fx
 	stereo_baseline = calibration_params.get_camera_baseline()
-	max_dist = 1.5
+	max_dist = 2
 	print ('focal_left_x in px: ', focal_left_x)
 	print ('stereo_baseline: ', stereo_baseline)
 	zed2i_camera_config = CameraConfig(stereo_baseline, focal_left_x)
@@ -51,8 +51,8 @@ def main():
 	runtime_parameters = sl.RuntimeParameters()
 	runtime_parameters.sensing_mode = sl.SENSING_MODE.FILL  # Use STANDARD or FILL sensing modes
 	# Setting the depth confidence parameters
-	runtime_parameters.confidence_threshold = 100
-	runtime_parameters.textureness_confidence_threshold = 100
+	runtime_parameters.confidence_threshold = 100.0
+	runtime_parameters.textureness_confidence_threshold = 100.0
 
 	# Capture 150 images and depth, then stop
 	i = 0
