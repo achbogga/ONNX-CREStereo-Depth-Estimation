@@ -12,7 +12,6 @@ def compute_colored_pointcloud(depth_image, rgb_image):
     :return: the colored point cloud
     """
 
-    height, width = depth_image.shape
     # compute point cloud:
     # Both images has the same resolution
     height, width = depth_image.shape

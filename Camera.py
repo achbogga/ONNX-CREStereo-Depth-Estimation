@@ -17,11 +17,11 @@ class PinholeCamera:
 				fy: float, 
 				cx: float, 
 				cy: float, 
-				disto: DistortionParameters, 
-				v_fov: float, 
-				h_fov: float,
-				d_fov: float,
 				image_size: t.Tuple[t.Any],
+				disto: DistortionParameters = None, 
+				v_fov: float = None, 
+				h_fov: float = None,
+				d_fov: float = None,
 				) -> None:
 		"""
 		A PinholeCamera class to hold all the camera intrinsic parameters
