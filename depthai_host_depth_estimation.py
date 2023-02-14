@@ -54,7 +54,7 @@ camera_config = CameraConfig(0.075, 0.5*input_shape[1]/0.72) # 71.9 deg. FOV
 max_distance = 3
 
 # Initialize model
-model_path = f'models/crestereo_{version}_iter{iters}_{input_shape[0]}x{input_shape[1]}.onnx'
+model_path = f'/home/aboggaram/models/Octiva/Orin/crestereo_pretrained_models/crestereo_{version}_iter{iters}_{input_shape[0]}x{input_shape[1]}.onnx'
 depth_estimator = CREStereo(model_path, camera_config=camera_config, max_dist=max_distance)
 
 # Get Depthai pipeline

@@ -29,7 +29,7 @@ camera_config = CameraConfig(0.12, 0.5*input_shape[1]/0.72)
 max_distance = 10
 
 # Initialize model
-model_path = f'models/crestereo_{version}_iter{iters}_{input_shape[0]}x{input_shape[1]}.onnx'
+model_path = f'/home/aboggaram/models/Octiva/Orin/crestereo_pretrained_models/crestereo_{version}_iter{iters}_{input_shape[0]}x{input_shape[1]}.onnx'
 depth_estimator = CREStereo(model_path, camera_config=camera_config, max_dist=max_distance)
 
 cv2.namedWindow("Estimated depth", cv2.WINDOW_NORMAL)	

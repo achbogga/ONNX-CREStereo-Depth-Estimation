@@ -44,7 +44,7 @@ def main():
 	output_folder_path = '/home/aboggaram/data/Octiva/zed2i_cre_depth_map_comparison'
 
 	# Initialize model
-	model_path = f'models/crestereo_{version}_iter{iters}_{shape[0]}x{shape[1]}.onnx'
+	model_path = f'/home/aboggaram/models/Octiva/Orin/crestereo_pretrained_models/crestereo_{version}_iter{iters}_{shape[0]}x{shape[1]}.onnx'
 
 	with _log_time_usage("Model Initialization and Optimization: "):
 		depth_estimator = CREStereo(model_path = model_path, camera_config = zed2i_camera_config, max_dist=max_dist)

@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
 
 	# Initialize model
-	model_path = f'models/crestereo_{version}_iter{iters}_{shape[0]}x{shape[1]}.onnx'
+	model_path = f'/home/aboggaram/models/Octiva/Orin/crestereo_pretrained_models/crestereo_{version}_iter{iters}_{shape[0]}x{shape[1]}.onnx'
 	# trt_engine_path = '/home/aboggaram/models/TensorrtExecutionProvider_TRTKernel_graph_next_onnx::Neg_8633_18146894986420854276_1_0_fp16.engine'
 	with _log_time_usage("Model Initialization and Optimization: "):
 		depth_estimator = CREStereo(model_path)

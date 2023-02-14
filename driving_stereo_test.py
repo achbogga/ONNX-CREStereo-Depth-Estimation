@@ -31,7 +31,7 @@ camera_config = CameraConfig(0.546, 500*input_shape[1]/1720) # rough estimate fr
 max_distance = 20
 
 # Initialize model
-model_path = f'models/crestereo_{version}_iter{iters}_{input_shape[0]}x{input_shape[1]}.onnx'
+model_path = f'/home/aboggaram/models/Octiva/Orin/crestereo_pretrained_models/crestereo_{version}_iter{iters}_{input_shape[0]}x{input_shape[1]}.onnx'
 depth_estimator = CREStereo(model_path, camera_config=camera_config, max_dist=max_distance)
 
 # Get the driving stereo samples

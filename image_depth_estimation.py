@@ -15,7 +15,7 @@ version = "combined" # The combined version does 2 passes, one to get an initial
 					 # Options: "init", "combined"
 
 # Initialize model
-model_path = f'models/crestereo_{version}_iter{iters}_{shape[0]}x{shape[1]}.onnx'
+model_path = f'/home/aboggaram/models/Octiva/Orin/crestereo_pretrained_models/crestereo_{version}_iter{iters}_{shape[0]}x{shape[1]}.onnx'
 depth_estimator = CREStereo(model_path)
 
 # Load images
