@@ -1,6 +1,7 @@
 import pyzed.sl as sl
 import typing as t
 import numpy as np
+import cv2
 
 class DistortionParameters:
 	def __init__(self, disto: np.ndarray) -> None:
@@ -149,49 +150,62 @@ class StereoCamera:
 		"""
 		return self.M
 
-	def get_depth_from_disparity(self, alignment = 'left'):
-		depth_map = np.zeros((self.image_width, self.image_height), dtype=float)
-		if alignment == 'left':
-			fx = self.left_cam.fx
-			fy = self.left_cam.fy
-			disp = self.disparity_map_left_aligned
-			depth_map[:,]
-			return fx*self.baseline/self.disparity_map_left_aligned
-
-	def calculate_depth_map_left_aligned(self) -> None:
+	def get_depth_map_left_aligned(self) -> np.ndarray:
 		"""
-		Description:
-			Calculate the Depth Map from stereo aligned with the left camera
+		Get the depth map left aligned
 		Args:
 			None
 		Returns:
-			None
+			np.ndarray
 		"""
-		
+		return self.depth_map_left_aligned
 	
-	def calculate_point_cloud_left_aligned(self) -> None:
+	def get_depth_map_right_aligned(self) -> np.ndarray:
+		"""
+		Get the depth map right aligned
+		Args:
+			None
+		Returns:
+			np.ndarray
+		"""
+		return self.depth_map_right_aligned
+
+	def calculate_depth_maps(self) -> None:
 		"""
 		Description:
-			Calculate the Relative Point cloud aligned with the left camera
+			Calculate the Depth Maps from stereo aligned with the left camera and also right cameras
 		Args:
 			None
 		Returns:
 			None
 		"""
-		# compute indices:
-		jj = np.tile(range(self.image_width), self.image_height)
-		ii = np.repeat(range(self.image_width), self.image_height)
+		# left aligned
+		self.depth_map_left_aligned = np.zeros((self.image_width, self.image_height), dtype=float)
+		fx = self.left_cam.fx
+		fy = self.left_cam.fy
+		disp = self.disparity_map_left_aligned
+		self.depth_map_left_aligned = fx*self.baseline/disp
 
-		# Compute constants:
-		xx = (jj - self.left_cam.cx) / self.left_cam.fx
-		yy = (ii - self.left_cam.cy) / self.left_cam.fy
-
-		# transform depth image to vector of z:
-		length = self.image_height * self.image_width
-		z = self.depth_map_left_aligned.reshape(length)
-
-		# compute point cloud
-		self.point_cloud_left_aligned = np.dstack((xx * z, yy * z, z)).reshape((length, 3))
+		# right aligned
+		self.depth_map_right_aligned = np.zeros((self.image_width, self.image_height), dtype=float)
+		fx = self.right_cam.fx
+		fy = self.right_cam.fy
+		disp = self.disparity_map_right_aligned
+		self.depth_map_right_aligned = fx*self.baseline/disp
+		
+	def calculate_point_clouds(self) -> None:
+		"""
+		Description:
+			Calculate the Relative Point clouds aligned with both the cameras
+		Args:
+			None
+		Returns:
+			None
+		"""
+		left_points = cv2.reprojectImageTo3D(self.disparity_map_left_aligned, 
+				       						self.get_stereo_transform())
+		right_points = cv2.reprojectImageTo3D(self.disparity_map_left_aligned, 
+				       						self.get_stereo_transform())
 
 	def get_point_cloud_left_aligned(self) -> np.ndarray:
 		"""
@@ -201,7 +215,17 @@ class StereoCamera:
 		Returns:
 			np.ndarray
 		"""
-		return self.point_cloud_left_aligned
+		return self.left_points
+	
+	def get_point_cloud_right_aligned(self) -> np.ndarray:
+		"""
+		Get the relative point cloud left camera aligned
+		Args:
+			None
+		Returns:
+			np.ndarray
+		"""
+		return self.right_points
 
 
 def test_with_zed():
