@@ -90,6 +90,12 @@ class StereoCamera:
 		"""
 		self.left_cam = left_cam
 		self.right_cam = right_cam
+		try:
+			assert left_cam.image_size == right_cam.image_size
+		except AssertionError as AE:
+			print ('left_dims: ', left_cam.image_size, 'right_dims: ', right_cam.image_size)
+			raise AE
+		self.image_width, self.image_height = left_cam.image_size
 		self.stereo_baseline = stereo_baseline
 	
 	def set_translation(self, 
@@ -142,6 +148,60 @@ class StereoCamera:
 			np.ndarray
 		"""
 		return self.M
+
+	def get_depth_from_disparity(self, alignment = 'left'):
+		depth_map = np.zeros((self.image_width, self.image_height), dtype=float)
+		if alignment == 'left':
+			fx = self.left_cam.fx
+			fy = self.left_cam.fy
+			disp = self.disparity_map_left_aligned
+			depth_map[:,]
+			return fx*self.baseline/self.disparity_map_left_aligned
+
+	def calculate_depth_map_left_aligned(self) -> None:
+		"""
+		Description:
+			Calculate the Depth Map from stereo aligned with the left camera
+		Args:
+			None
+		Returns:
+			None
+		"""
+		
+	
+	def calculate_point_cloud_left_aligned(self) -> None:
+		"""
+		Description:
+			Calculate the Relative Point cloud aligned with the left camera
+		Args:
+			None
+		Returns:
+			None
+		"""
+		# compute indices:
+		jj = np.tile(range(self.image_width), self.image_height)
+		ii = np.repeat(range(self.image_width), self.image_height)
+
+		# Compute constants:
+		xx = (jj - self.left_cam.cx) / self.left_cam.fx
+		yy = (ii - self.left_cam.cy) / self.left_cam.fy
+
+		# transform depth image to vector of z:
+		length = self.image_height * self.image_width
+		z = self.depth_map_left_aligned.reshape(length)
+
+		# compute point cloud
+		self.point_cloud_left_aligned = np.dstack((xx * z, yy * z, z)).reshape((length, 3))
+
+	def get_point_cloud_left_aligned(self) -> np.ndarray:
+		"""
+		Get the relative point cloud left camera aligned
+		Args:
+			None
+		Returns:
+			np.ndarray
+		"""
+		return self.point_cloud_left_aligned
 
 
 def test_with_zed():

@@ -53,6 +53,7 @@ if __name__ == '__main__':
 
 		with _log_time_usage("depth inference 1 pair: "):
 			disparity_map = depth_estimator(left_img, right_img)
+		# print (disparity_map.shape)
 
 		color_disparity = depth_estimator.draw_disparity()
 
