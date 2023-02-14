@@ -1,4 +1,3 @@
-import pyzed.sl as sl
 import typing as t
 import numpy as np
 import cv2
@@ -220,35 +219,4 @@ class StereoCamera:
 		return right_points
 
 
-def test_with_zed():
-	# Create a Camera object
-	zed = sl.Camera()
 
-	# Create a InitParameters object and set configuration parameters
-	init_params = sl.InitParameters()
-	init_params.depth_mode = sl.DEPTH_MODE.NEURAL  # Use one of PERFORMANCE, NEURAL, ULTRA, QUALITY depth modes
-	init_params.coordinate_units = sl.UNIT.METER  # Use meter units (for depth measurements)
-	init_params.camera_resolution = sl.RESOLUTION.HD720
-
-	# Open the camera
-	err = zed.open(init_params)
-	if err != sl.ERROR_CODE.SUCCESS:
-		exit(1)
-
-	calibration_params = zed.get_camera_information().camera_configuration.calibration_parameters
-	# Focal length of the left eye in pixels
-	focal_left_x = calibration_params.left_cam.fx
-	stereo_baseline = calibration_params.get_camera_baseline()
-	stereo_transform = calibration_params.stereo_transform
-	stereo_T = calibration_params.T
-	stereo_R = calibration_params.R
-	print ('focal_left_x in px: ', focal_left_x)
-	print ('stereo_baseline: ', stereo_baseline)
-	print ('stereo_transform: ', type(stereo_transform), stereo_transform)
-	print ('stereo_T: ', type(stereo_T), stereo_T)
-	print ('stereo_R: ', type(stereo_R), stereo_R)
-
-	# Close the camera
-	zed.close()
-
-test_with_zed()

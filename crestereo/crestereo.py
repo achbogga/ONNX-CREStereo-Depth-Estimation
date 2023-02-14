@@ -53,7 +53,7 @@ class CREStereo():
 							'trt_max_workspace_size': 2147483648,
 							'trt_fp16_enable': True,
 							'trt_engine_cache_enable': True,
-							'trt_engine_cache_path': '/home/aboggaram/models/Octiva/Orin/crestereo_tensorrt_cache',
+							'trt_engine_cache_path': '/home/aboggaram/models/Octiva/Orin/crestereo_tensorrt_cache/',
 							# 'trt_dump_subgraphs': True,
 						}),
 						'CUDAExecutionProvider',
