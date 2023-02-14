@@ -170,7 +170,7 @@ class StereoCamera:
 		"""
 		return self.depth_map_right_aligned
 
-	def calculate_depth_maps(self) -> None:
+	def calculate_depth_maps(self, disparity_map) -> None:
 		"""
 		Description:
 			Calculate the Depth Maps from stereo aligned with the left camera and also right cameras
@@ -180,52 +180,44 @@ class StereoCamera:
 			None
 		"""
 		# left aligned
-		self.depth_map_left_aligned = np.zeros((self.image_width, self.image_height), dtype=float)
 		fx = self.left_cam.fx
-		fy = self.left_cam.fy
-		disp = self.disparity_map_left_aligned
-		self.depth_map_left_aligned = fx*self.baseline/disp
+		self.depth_map_left_aligned = np.zeros((self.image_width, self.image_height), dtype=float)
+		self.depth_map_left_aligned = fx*self.baseline/disparity_map
 
 		# right aligned
-		self.depth_map_right_aligned = np.zeros((self.image_width, self.image_height), dtype=float)
 		fx = self.right_cam.fx
-		fy = self.right_cam.fy
-		disp = self.disparity_map_right_aligned
-		self.depth_map_right_aligned = fx*self.baseline/disp
+		self.depth_map_right_aligned = np.zeros((self.image_width, self.image_height), dtype=float)
+		self.depth_map_right_aligned = fx*self.baseline/disparity_map
 		
-	def calculate_point_clouds(self) -> None:
+	def get_point_cloud_left_aligned(self, disparity_map) -> np.ndarray:
 		"""
 		Description:
-			Calculate the Relative Point clouds aligned with both the cameras
+			Calculate the Relative Point clouds aligned with left camera
 		Args:
-			None
+			disparity_map -> np.ndarray
 		Returns:
-			None
+			left_points -> np.ndarray
 		"""
-		left_points = cv2.reprojectImageTo3D(self.disparity_map_left_aligned, 
-				       						self.get_stereo_transform())
-		right_points = cv2.reprojectImageTo3D(self.disparity_map_left_aligned, 
-				       						self.get_stereo_transform())
-
-	def get_point_cloud_left_aligned(self) -> np.ndarray:
-		"""
-		Get the relative point cloud left camera aligned
-		Args:
-			None
-		Returns:
-			np.ndarray
-		"""
-		return self.left_points
+		K_left = self.left_cam.get_intrinsic_matrix()
+		M_stereo_extrinsic = self.get_stereo_transform()
+		Q_left = np.matmul(K_left, M_stereo_extrinsic)
+		left_points = cv2.reprojectImageTo3D(disparity_map, Q_left)
+		return left_points
 	
-	def get_point_cloud_right_aligned(self) -> np.ndarray:
+	def get_point_cloud_right_aligned(self, disparity_map) -> np.ndarray:
 		"""
-		Get the relative point cloud left camera aligned
+		Description:
+			Calculate the Relative Point clouds aligned with the right camera
 		Args:
-			None
+			disparity_map -> np.ndarray
 		Returns:
-			np.ndarray
+			right_points -> np.ndarray
 		"""
-		return self.right_points
+		K_right = self.right_cam.get_intrinsic_matrix()
+		M_stereo_extrinsic = self.get_stereo_transform()
+		Q_right = np.matmul(K_right, M_stereo_extrinsic)
+		right_points = cv2.reprojectImageTo3D(disparity_map, Q_right)
+		return right_points
 
 
 def test_with_zed():
