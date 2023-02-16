@@ -4,9 +4,10 @@ from dataclasses import dataclass
 import cv2
 import numpy as np
 import onnxruntime
+import os
+import platform
 
 from contextlib import contextmanager
-import time
 import logging
 
 
@@ -45,6 +46,15 @@ class CREStereo():
 
 		self.camera_config = camera_config
 		self.max_dist = max_dist
+		if platform.machine()=='x86_64':
+			trt_cache_path = '/home/aboggaram/models/Octiva/Orin/crestereo_x86_64_tensorrt_cache/'
+		else:
+			trt_cache_path = '/home/aboggaram/models/Octiva/Orin/crestereo_tensorrt_cache/'
+
+		if not os.path.exists(trt_cache_path):
+			os.makedirs(trt_cache_path)
+
+		print('onnxruntime_device: ', onnxruntime.get_device())
 
 		# Initialize model session
 		self.session = onnxruntime.InferenceSession(model_path, providers=[
@@ -53,7 +63,7 @@ class CREStereo():
 							'trt_max_workspace_size': 2147483648,
 							'trt_fp16_enable': True,
 							'trt_engine_cache_enable': True,
-							'trt_engine_cache_path': '/home/aboggaram/models/Octiva/Orin/crestereo_tensorrt_cache/',
+							'trt_engine_cache_path': trt_cache_path,
 							# 'trt_dump_subgraphs': True,
 						}),
 						'CUDAExecutionProvider',
@@ -72,7 +82,7 @@ class CREStereo():
 		left_tensor = self.prepare_input(left_img)
 		right_tensor = self.prepare_input(right_img)
 
-		# Get the half resolution to calculate flow_init 
+		# Get the half resolution to calculate flow_init
 		if self.has_flow:
 
 			left_tensor_half = self.prepare_input(left_img, half=True)
@@ -107,7 +117,7 @@ class CREStereo():
 			img_input = cv2.resize(img, (self.input_width, self.input_height), cv2.INTER_AREA)
 
 		img_input = img_input.transpose(2, 0, 1)
-		img_input = img_input[np.newaxis,:,:,:]        
+		img_input = img_input[np.newaxis,:,:,:]
 
 		return img_input.astype(np.float32)
 
@@ -115,7 +125,7 @@ class CREStereo():
 
 		return self.session.run(self.output_names, {self.input_names[0]: left_tensor,
 										            self.input_names[1]: right_tensor})[0]
-		
+
 	def inference_with_flow(self, left_tensor_half, right_tensor_half, left_tensor, right_tensor):
 
 		return self.session.run(self.output_names, {self.input_names[0]: left_tensor_half,
@@ -123,7 +133,7 @@ class CREStereo():
 													self.input_names[2]: left_tensor,
 										            self.input_names[3]: right_tensor})[0]
 
-	def process_output(self, output): 
+	def process_output(self, output):
 
 		return np.squeeze(output[:,0,:,:])
 
@@ -141,7 +151,7 @@ class CREStereo():
 		return cv2.applyColorMap(cv2.convertScaleAbs(norm_disparity_map,1), cv2.COLORMAP_MAGMA)
 
 	def draw_depth(self):
-		
+
 		return self.util_draw_depth(self.depth_map, (self.img_width, self.img_height), self.max_dist)
 
 	@staticmethod
@@ -172,7 +182,7 @@ class CREStereo():
 		self.output_shape = model_outputs[0].shape
 
 if __name__ == '__main__':
-	
+
 	from imread_from_url import imread_from_url
 
 	# Initialize model
